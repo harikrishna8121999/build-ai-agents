@@ -2,11 +2,16 @@
 
 import json
 import uuid
-from inspect import getsource
+from html import escape
+from inspect import getsource, getsourcefile
+from pathlib import Path
 from pprint import pprint
 
 import pandas as pd
-from IPython.display import Image, Markdown, display
+from IPython.display import Image, display
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import PythonLexer
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langgraph.types import Command
 
@@ -76,8 +81,25 @@ def show_refunds(order_id=None):
         print(f"No refunds for {order_id or 'any order'}.")
 
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
 def show_source(obj):
-    display(Markdown(f"```python\n{getsource(getattr(obj, 'func', obj))}\n```"))
+    """Show a function's real source code in a boxed panel, labeled with its file."""
+    func = getattr(obj, "func", obj)  # a @tool wraps the plain function in .func
+    code = getsource(func)
+    file = Path(getsourcefile(func)).resolve().relative_to(PROJECT_ROOT).as_posix()
+    spans = highlight(code, PythonLexer(), HtmlFormatter(noclasses=True, nowrap=True, style="github-dark"))
+    label = f"{escape(file)} &middot; {escape(func.__name__)}"
+    html = (
+        '<div style="border:1px solid #30363d; border-radius:10px; overflow:hidden; margin:6px 0;">'
+        '<div style="background:#161b22; color:#8b949e; font-family:monospace; font-size:12px; '
+        f'padding:7px 14px; border-bottom:1px solid #30363d;">{label}</div>'
+        '<pre style="margin:0; padding:12px 14px; overflow-x:auto; border:none; border-radius:0; '
+        "background:#0d1117; color:#e6edf3; font-family:Consolas, 'Cascadia Mono', monospace; "
+        f'font-size:13px; line-height:1.45; white-space:pre;">{spans}</pre></div>'
+    )
+    display({"text/html": html, "text/plain": code}, raw=True)
 
 
 def show_graph(agent):
