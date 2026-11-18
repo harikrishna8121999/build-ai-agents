@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!-- Source of architecture.png. Render: open in Chrome and take a screenshot. -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { margin: 0; background: #fff; }
+  #diagram { padding: 16px; }
+  #diagram svg { display: block; }
+  #diagram .edgeLabel, #diagram .edgeLabel p, #diagram .labelBkg { background-color: #fff !important; }
+  #diagram .edgeLabel rect { fill: #fff !important; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+<div id="diagram"><pre class="mermaid">
+flowchart LR
+    msg[Customer message] --> ig[Input guard]
+    ig -->|attack| blocked[Blocked]
+    ig -->|safe| agent[Agent: the LLM]
+    agent -->|needs data| tools[Tools]
+    tools --> agent
+    tools --> orders[(Orders database)]
+    tools --> docs[(Policy documents)]
+    tools --> memory[(Customer memory)]
+    tools -.->|refund above $100| human[Human manager]
+    agent -->|answer| og[Output guard]
+    og --> reply[Reply]
+</pre></div>
+<script>mermaid.initialize({ startOnLoad: true, theme: "default" });</script>
+</body>
+</html>

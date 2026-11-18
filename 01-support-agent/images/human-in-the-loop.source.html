@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<!-- Source of human-in-the-loop.png. Render: open in Chrome and take a screenshot. -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { margin: 0; background: #fff; }
+  #diagram { padding: 16px; }
+  #diagram svg { display: block; }
+  #diagram .edgeLabel, #diagram .edgeLabel p, #diagram .labelBkg { background-color: #fff !important; }
+  #diagram .edgeLabel rect { fill: #fff !important; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+<div id="diagram"><pre class="mermaid">
+flowchart LR
+    agent[Agent: request refund] --> rules{Rules OK?}
+    rules -->|no| explain[Explain why not]
+    rules -->|yes, above $100| pause[PAUSE: ask manager]
+    rules -->|yes, up to $100| now[Refund now]
+    pause -->|reject| explain
+    pause -->|approve / edit| now
+</pre></div>
+<script>mermaid.initialize({ startOnLoad: true, theme: "default" });</script>
+</body>
+</html>

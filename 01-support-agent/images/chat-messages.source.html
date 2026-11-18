@@ -1,0 +1,99 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1600px; height: 900px; background: #f4f1ea; font-family: "Segoe UI", system-ui, sans-serif; color: #1f2328; padding: 44px 56px; }
+  h1 { font-size: 38px; font-weight: 700; letter-spacing: -0.5px; }
+  .sub { font-size: 20px; color: #5b616b; margin-top: 6px; }
+  .row { display: flex; gap: 40px; margin-top: 30px; align-items: stretch; }
+  .label { font-size: 15px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #6b7280; margin-bottom: 12px; }
+
+  /* Left: a generic chat app */
+  .left { width: 760px; }
+  .app { background: #fff; border-radius: 18px; box-shadow: 0 18px 50px rgba(0,0,0,.12); overflow: hidden; height: 600px; display: flex; }
+  .side { width: 170px; background: #f7f7f8; border-right: 1px solid #ececec; padding: 18px 14px; }
+  .newchat { border: 1px solid #ddd; border-radius: 10px; padding: 9px 12px; font-size: 14px; background: #fff; }
+  .hist { margin-top: 18px; font-size: 13px; color: #6b7280; line-height: 2.1; }
+  .hist b { color: #1f2328; font-weight: 600; }
+  .main { flex: 1; display: flex; flex-direction: column; position: relative; }
+  .top { height: 54px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; padding: 0 22px; font-weight: 600; font-size: 16px; }
+  .top span { color: #9ca3af; font-weight: 400; margin-left: 8px; font-size: 14px; }
+  .msgs { flex: 1; padding: 18px 26px; display: flex; flex-direction: column; gap: 14px; }
+  .chip { font-size: 12.5px; font-weight: 700; letter-spacing: .4px; color: #fff; padding: 3px 9px; border-radius: 6px; display: inline-block; margin-bottom: 6px; }
+  .wrap { display: flex; flex-direction: column; } .wrap.end { align-items: flex-end; }
+  .c-sys { background: #7c3aed; } .c-hum { background: #2563eb; } .c-ai { background: #059669; }
+  .hidden { border: 2px dashed #c4b5fd; background: #faf7ff; border-radius: 12px; padding: 12px 14px; font-size: 14px; color: #6d28d9; }
+  .hidden .t { font-weight: 700; font-size: 13px; letter-spacing: .5px; margin-bottom: 4px; }
+  .hidden .q { color: #7c3aed; opacity: .85; font-style: italic; }
+  .user { background: #e8f0fe; color: #1f2328; padding: 13px 18px; border-radius: 18px 18px 4px 18px; font-size: 17px; max-width: 70%; }
+  .bot { display: flex; gap: 12px; max-width: 92%; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#10b981,#059669); flex-shrink: 0; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:15px; }
+  .bot p { font-size: 17px; line-height: 1.5; padding-top: 4px; }
+  .input { margin: 0 22px 20px; border: 1px solid #e5e5e5; border-radius: 16px; padding: 14px 18px; color: #9ca3af; font-size: 16px; display: flex; justify-content: space-between; }
+  .send { width: 30px; height: 30px; border-radius: 50%; background: #1f2328; }
+  .tag { position: absolute; font-size: 14px; font-weight: 700; padding: 5px 11px; border-radius: 8px; color: #fff; white-space: nowrap; }
+  .tag::after { content: ""; position: absolute; top: 50%; width: 26px; border-top: 2px solid; }
+  .t-sys { background: #7c3aed; } .t-sys::after { border-color: #7c3aed; }
+  .t-hum { background: #2563eb; } .t-hum::after { border-color: #2563eb; }
+  .t-ai  { background: #059669; } .t-ai::after  { border-color: #059669; }
+  .tag.r::after { left: 100%; } .tag.l::after { right: 100%; }
+
+  /* Right: what the LLM receives */
+  .right { flex: 1; }
+  .code { background: #1e1e2e; color: #cdd6f4; border-radius: 18px; padding: 28px 30px; font-family: Consolas, "Cascadia Code", monospace; font-size: 18px; line-height: 1.55; height: 600px; box-shadow: 0 18px 50px rgba(0,0,0,.18); display: flex; flex-direction: column; }
+  .code .c { color: #7f849c; }
+  .m { border-left: 4px solid; padding: 8px 0 8px 14px; margin: 10px 0 10px 22px; border-radius: 2px; }
+  .m.sys { border-color: #a78bfa; background: rgba(167,139,250,.08); }
+  .m.hum { border-color: #60a5fa; background: rgba(96,165,250,.08); }
+  .m.ai  { border-color: #34d399; background: rgba(52,211,153,.08); }
+  .k-sys { color: #c4b5fd; font-weight: 700; } .k-hum { color: #93c5fd; font-weight: 700; } .k-ai { color: #6ee7b7; font-weight: 700; }
+  .s { color: #f9e2af; }
+  .note { margin-top: auto; background: #2a2b3d; border-radius: 12px; padding: 16px 18px; font-family: "Segoe UI", sans-serif; font-size: 16.5px; line-height: 1.5; color: #e6e9f5; }
+  .note b { color: #fff; }
+  .foot { margin-top: 22px; font-size: 17px; color: #4b5563; }
+  .foot b { color: #1f2328; }
+</style></head><body>
+  <h1>What really happens when you chat with an AI app</h1>
+  <div class="sub">ChatGPT, Claude, DeepSeek and our support agent all work the same way: a conversation is a list of messages.</div>
+
+  <div class="row">
+    <div class="left">
+      <div class="label">What you see in the chat app</div>
+      <div class="app">
+        <div class="side">
+          <div class="newchat">+ New chat</div>
+          <div class="hist">Today<br><b>Order ORD-1003</b><br>Laptop warranty<br>Yesterday<br>Return policy</div>
+        </div>
+        <div class="main">
+          <div class="top">Pixel &amp; Plug Support <span>&middot; AI assistant</span></div>
+          <div class="msgs">
+            <div class="wrap"><span class="chip c-sys" style="align-self:flex-start">SystemMessage</span><div class="hidden">
+              <div class="t">HIDDEN FROM YOU</div>
+              <div class="q">"You are the support assistant for Pixel &amp; Plug. Be friendly and concise..."</div>
+            </div></div>
+            <div class="wrap end"><span class="chip c-hum">HumanMessage</span><div class="user">Where is my order ORD-1003?</div></div>
+            <div class="wrap"><span class="chip c-ai" style="align-self:flex-start">AIMessage</span><div class="bot"><div class="avatar">AI</div><p>Your smartwatch is on its way, but the courier says it's delayed by 3 days. The new delivery date is Friday.</p></div></div>
+            <div class="wrap end"><span class="chip c-hum">HumanMessage</span><div class="user">Thanks! Can I still cancel it?</div></div>
+          </div>
+          <div class="input">Message the assistant... <div class="send"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="label">What the LLM actually receives</div>
+      <div class="code">
+        <div><span class="c"># sent again, in full, every time you press Enter</span></div>
+        <div>messages = [</div>
+        <div class="m sys"><span class="k-sys">SystemMessage</span>(<span class="s">"You are the support assistant for Pixel &amp; Plug..."</span>),</div>
+        <div class="m hum"><span class="k-hum">HumanMessage</span>(<span class="s">"Where is my order ORD-1003?"</span>),</div>
+        <div class="m ai"><span class="k-ai">AIMessage</span>(<span class="s">"Your smartwatch is on its way, but..."</span>),</div>
+        <div class="m hum"><span class="k-hum">HumanMessage</span>(<span class="s">"Thanks! Can I still cancel it?"</span>),</div>
+        <div>]</div>
+        <div style="margin-top:8px"><span class="k-ai">reply</span> = llm.invoke(messages)</div>
+        <div class="note"><b>The LLM itself remembers nothing.</b> The app keeps the list and sends the whole conversation every time. That's how it "remembers" what you said earlier, and why very long chats get slow.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot"><b style="color:#7c3aed">System</b> = the job description, written by developers &nbsp;&middot;&nbsp; <b style="color:#2563eb">Human</b> = what you type &nbsp;&middot;&nbsp; <b style="color:#059669">AI</b> = what the model replies</div>
+</body></html>

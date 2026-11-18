@@ -1,0 +1,65 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1600px; height: 640px; background: #f4f1ea; font-family: "Segoe UI", system-ui, sans-serif; color: #1f2328; padding: 40px 50px; }
+  h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.4px; }
+  .sub { font-size: 19px; color: #5b616b; margin-top: 6px; }
+  .row { display: flex; align-items: flex-start; margin-top: 30px; gap: 0; }
+  .col { display: flex; flex-direction: column; }
+  .step { font-size: 14px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: #6b7280; margin-bottom: 10px; }
+  .card { background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.10); padding: 14px 16px; font-size: 16px; line-height: 1.4; border-left: 6px solid; }
+  .card .k { font-family: Consolas, monospace; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .sys { border-color: #7c3aed; } .sys .k { color: #7c3aed; }
+  .hum { border-color: #2563eb; } .hum .k { color: #2563eb; }
+  .ai  { border-color: #059669; } .ai .k  { color: #059669; }
+  .arrow { width: 110px; margin-top: 95px; display: flex; flex-direction: column; align-items: center; color: #4b5563; font-size: 14px; text-align: center; font-weight: 600; }
+  .arrow svg { margin: 6px 0; }
+  .dark { background: #1e1e2e; color: #cdd6f4; border-radius: 16px; padding: 18px 20px; font-family: Consolas, monospace; font-size: 16.5px; line-height: 1.55; box-shadow: 0 14px 40px rgba(0,0,0,.18); white-space: pre; }
+  .t { color: #fab387; font-weight: 700; }
+  .r-sys { color: #c4b5fd; } .r-user { color: #93c5fd; } .r-ai { color: #6ee7b7; }
+  .dim { color: #7f849c; }
+  .here { display: inline-block; margin-top: 10px; font-family: "Segoe UI", sans-serif; font-size: 14.5px; color: #f9e2af; white-space: normal; }
+  .gen { color: #a6e3a1; }
+  .note { font-size: 14.5px; color: #4b5563; margin-top: 10px; line-height: 1.45; }
+  .foot { margin-top: 34px; background: #fff7ed; border: 2px solid #fdba74; border-radius: 14px; padding: 16px 20px; font-size: 18px; line-height: 1.5; color: #7c2d12; }
+  .foot b { color: #9a3412; }
+</style></head><body>
+  <h1>What happens inside one LLM call</h1>
+  <div class="sub">LangChain turns our messages into one long text. The LLM reads it and writes what comes next.</div>
+
+  <div class="row">
+    <div class="col" style="width: 300px;">
+      <div class="step">1. Our messages</div>
+      <div class="card sys"><div class="k">SystemMessage</div>You are the customer support assistant for Pixel &amp; Plug...</div>
+      <div class="card hum" style="margin-top: 14px;"><div class="k">HumanMessage</div>Where is my order ORD-1003?</div>
+    </div>
+
+    <div class="arrow">chat template
+      <svg width="80" height="22"><line x1="0" y1="11" x2="68" y2="11" stroke="#4b5563" stroke-width="3"/><polygon points="68,3 80,11 68,19" fill="#4b5563"/></svg>
+      special tokens mark who said what</div>
+
+    <div class="col" style="width: 470px;">
+      <div class="step">2. The text the LLM really sees</div>
+      <div class="dark"><span class="t">&lt;|im_start|&gt;</span><span class="r-sys">system</span>
+You are the support assistant...<span class="t">&lt;|im_end|&gt;</span>
+<span class="t">&lt;|im_start|&gt;</span><span class="r-user">user</span>
+Where is my order ORD-1003?<span class="t">&lt;|im_end|&gt;</span>
+<span class="t">&lt;|im_start|&gt;</span><span class="r-ai">assistant</span>
+<span class="dim">&lt;think&gt;&lt;/think&gt;</span>
+<span class="here">&#9654; The LLM continues the text from here, piece by piece.</span></div>
+    </div>
+
+    <div class="arrow">LLM writes
+      <svg width="80" height="22"><line x1="0" y1="11" x2="68" y2="11" stroke="#4b5563" stroke-width="3"/><polygon points="68,3 80,11 68,19" fill="#4b5563"/></svg>
+      the most likely next words</div>
+
+    <div class="col" style="width: 400px;">
+      <div class="step">3. The reply</div>
+      <div class="dark" style="white-space: normal;"><span class="gen">Your order ORD-1003 is currently being processed and should be shipped within the next 24 hours.</span><span class="t">&lt;|im_end|&gt;</span></div>
+      <div class="note">It stops when it writes <b>&lt;|im_end|&gt;</b>. LangChain removes the tokens and gives us:</div>
+      <div class="card ai" style="margin-top: 10px;"><div class="k">AIMessage</div>Your order ORD-1003 is currently being processed...</div>
+    </div>
+  </div>
+
+  <div class="foot"><b>Notice:</b> the LLM never looked anything up. It only predicted text that <i>sounds</i> like a support reply. "Shipped within 24 hours" is made up. This is called <b>hallucination</b>, and it's why the agent needs tools.</div>
+</body></html>
