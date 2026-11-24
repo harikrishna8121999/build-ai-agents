@@ -8,7 +8,7 @@ This repo has the code for the YouTube series. Each folder is one project. Each 
 
 | # | Project | What you learn | Video |
 |---|---|---|---|
-| 01 | [Customer support agent](01-support-agent/) | tools, the agent loop, RAG, memory, human-in-the-loop, guardrails, tracing, evals | coming soon |
+| 01 | [Customer support agent](01-support-agent/) | tools, the agent loop, RAG, memory, human-in-the-loop, guardrails, tracing, evals | [Watch](https://youtu.be/LEZcEWTKrps) |
 
 ## How to use this repo
 
