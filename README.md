@@ -10,8 +10,6 @@ This repo has the code for the YouTube series. Each folder is one project. Each 
 |---|---|---|---|
 | 01 | [Customer support agent](01-support-agent/) | tools, the agent loop, RAG, memory, human-in-the-loop, guardrails, tracing, evals | coming soon |
 
-More projects are on the way: multi-agent + MCP, a terminal agent from scratch, RAG and search, real-world projects, evals and security, and small local models.
-
 ## How to use this repo
 
 ```bash
